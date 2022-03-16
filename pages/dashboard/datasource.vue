@@ -3,7 +3,7 @@
     <v-card-title>Data Source</v-card-title>
     <br>
     <v-card>
-      <v-row class="mx-2">
+      <!-- <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field
             solo
@@ -23,13 +23,34 @@
             <v-icon>mdi-plus </v-icon> Add Data Source</v-btn
           >
         </v-col>
-      </v-row>
+      </v-row> -->
+      <v-toolbar flat>
+        <v-text-field
+          class="mt-7"
+          solo
+          style="width:75%"
+          label="Cari"
+          @keyup="getDataSource()"
+          v-model="pencarian"
+          clearable
+          prepend-inner-icon="mdi-magnify"
+        ></v-text-field>
+        <v-spacer />
+        <v-btn
+          class="white--text"
+          color="#305F72"
+          large
+          @click="dialogPostDataSource = true"
+        >
+          <v-icon>mdi-plus </v-icon> Add Data Source</v-btn
+        >
+      </v-toolbar>
+      <br>
       <v-card class="mx-3">
         <v-data-table
           :headers="headers"
           :items="listDataSource"
           hide-default-footer
-          :search="pencarian"
           :items-per-page="150"
           class="elevation-1"
         >
@@ -53,6 +74,19 @@
                 </v-icon>
             </template>
         </v-data-table>
+        <v-row>
+          <v-col cols="10" md="10">
+            <div class="text-center pt-2">
+              <v-pagination
+                v-model="page"
+                @input="getDataSource()"
+                :length="lengthPage"
+                color="#305F72"
+                :total-visible="9"
+              ></v-pagination>
+            </div>
+          </v-col>
+        </v-row>
       </v-card>
       <br><br>
     </v-card>
@@ -186,6 +220,11 @@ export default {
         id:'',
         datasource:'',
     },
+
+    lengthPage: 0,
+    limit: 9,
+    offset: 0,
+    page:1,
   }),
   computed: {
     ...mapGetters({
@@ -202,15 +241,33 @@ export default {
       return args.value + "%";
     },
     async getDataSource(){
+      var params = new URLSearchParams();
+
+      var offset = (this.offset = (this.page - 1) * this.limit);
+      params.append("limit", this.limit);
+      params.append("offset", offset);
+      params.append("search", this.pencarian);
+
+      var request = {
+        params: params,
+        // headers: { Authorization: this.DataToken }
+      };
+
       await this.$axios
-        .get('/master/v1/mst_data_source', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/master/v1/mst_data_source', request)
         .then((response) => {
           let { data } = response.data
           this.listDataSource = data
+          var mod = response.data.count % this.limit;
+          var lengthPage = 0;
+
+          lengthPage = (response.data.count - mod) / this.limit;
+
+          if (mod == 0) {
+            this.lengthPage = lengthPage;
+          } else {
+            this.lengthPage = lengthPage + 1;
+          } 
           console.log(this.listDataSource)
         })
         .catch((error) => {

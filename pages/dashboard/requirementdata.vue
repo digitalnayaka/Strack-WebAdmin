@@ -3,7 +3,7 @@
     <v-card-title>Requirement Data</v-card-title>
     <br>
     <v-card>
-      <v-row class="mx-2">
+      <!-- <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field
             solo
@@ -23,13 +23,34 @@
             <v-icon>mdi-plus </v-icon> Add Requirement Data</v-btn
           >
         </v-col>
-      </v-row>
+      </v-row> -->
+      <v-toolbar flat>
+        <v-text-field
+          class="mt-7"
+          solo
+          style="width:70%"
+          label="Cari"
+          @keyup="getReqData()"
+          v-model="pencarian"
+          clearable
+          prepend-inner-icon="mdi-magnify"
+        ></v-text-field>
+        <v-spacer />
+        <v-btn
+          class="white--text"
+          color="#305F72"
+          large
+          @click="dialogPostReqData = true"
+        >
+          <v-icon>mdi-plus </v-icon> Add Requirement Data</v-btn
+        >
+      </v-toolbar>
+      <br>
       <v-card class="mx-3">
         <v-data-table
           :headers="headers"
           :items="listReqData"
           hide-default-footer
-          :search="pencarian"
           :items-per-page="150"
           class="elevation-1"
         >
@@ -53,6 +74,19 @@
                 </v-icon>
             </template>
         </v-data-table>
+        <v-row>
+          <v-col cols="10" md="10">
+            <div class="text-center pt-2">
+              <v-pagination
+                v-model="page"
+                @input="getReqData()"
+                :length="lengthPage"
+                :total-visible="9"
+                color="#305F72"
+              ></v-pagination>
+            </div>
+          </v-col>
+        </v-row>
       </v-card>
       <br><br>
     </v-card>
@@ -186,6 +220,10 @@ export default {
         id:'',
         need:'',
     },
+    lengthPage: 0,
+    limit: 9,
+    offset: 0,
+    page:1,
   }),
   computed: {
     ...mapGetters({
@@ -202,15 +240,32 @@ export default {
       return args.value + "%";
     },
     async getReqData(){
+      var params = new URLSearchParams();
+
+      var offset = (this.offset = (this.page - 1) * this.limit);
+      params.append("limit", this.limit);
+      params.append("offset", offset);
+      params.append("search", this.pencarian);
+
+      var request = {
+        params: params,
+        // headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/master/v1/mst_need', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/master/v1/mst_need', request)
         .then((response) => {
           let { data } = response.data
           this.listReqData = data
+          var mod = response.data.count % this.limit;
+          var lengthPage = 0;
+
+          lengthPage = (response.data.count - mod) / this.limit;
+
+          if (mod == 0) {
+            this.lengthPage = lengthPage;
+          } else {
+            this.lengthPage = lengthPage + 1;
+          } 
           console.log(this.listReqData)
         })
         .catch((error) => {

@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <v-card-title>Prospect Status</v-card-title>
+    <v-card-title>Address Data</v-card-title>
     <br>
     <v-card>
         <br>
-      <v-row class="mx-2">
+      <!-- <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field
             solo
@@ -25,7 +25,29 @@
             <v-icon>mdi-plus </v-icon> Add Status</v-btn
           >
         </v-col>
-      </v-row>
+      </v-row> -->
+      <v-toolbar flat>
+        <v-text-field
+          class="mt-7"
+          solo
+          style="width:70%"
+          label="Cari"
+          v-model="pencarian"
+          clearable
+          prepend-inner-icon="mdi-magnify"
+        ></v-text-field>
+        <v-spacer />
+        <v-btn
+          class="white--text"
+          style="float:right"
+          color="#305F72"
+          large
+          @click="dialogPostStatus = true"
+        >
+          <v-icon>mdi-plus </v-icon> Add Status</v-btn
+        >
+      </v-toolbar>
+      <br>
       <v-card class="mx-3">
         <v-data-table
           :headers="headers"

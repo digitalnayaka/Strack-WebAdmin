@@ -5,7 +5,7 @@
                 <h1>List Company</h1>
                 <v-text-field
                     outlined
-                    v-model="perusahaanTerpilih"
+                    v-model="namaPerusahaanTerpilih"
                     label="Choose Company"
                     readonly
                     @click="dialogPerusahaan=true"
@@ -16,6 +16,7 @@
                     large
                     class="white--text"
                     color="#305F72"
+                    @click="enterCompany()"
                     :disabled="perusahaanTerpilih=='' ? true : false"
                     >
                     ENTER
@@ -30,7 +31,7 @@
                     label="Cari Perusahaan"
                     prepend-inner-icon="mdi-magnify"
                 ></v-text-field>
-                <v-card @click="pilihPerusahaan(item.nama)" style="border:1px solid #E4E9EC" v-for="(item,index) in listPerusahaan" :key="index">
+                <v-card @click="pilihPerusahaan(item)" style="border:1px solid #E4E9EC" v-for="(item,index) in listCompany" :key="index">
                     <v-list :style="index%2==0 ? 'background:#E4E9EC' : ''">
                         <v-list-item>
                             <v-list-item-avatar>
@@ -38,10 +39,10 @@
                             </v-list-item-avatar>
                             <v-list-item-content>
                                 <v-list-item-title>
-                                    {{ item.nama }}
+                                    {{ item.company_name }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
-                                    {{ item.deskripsi }}
+                                    {{ item.company_type }}
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
@@ -80,6 +81,7 @@ export default {
   directives: { mask },
   data: () => ({    
       dialogPerusahaan:false,
+      listCompany:[],
       listPerusahaan:[
           {
               nama:'Strack',
@@ -98,7 +100,8 @@ export default {
               deskripsi:'ini adalah sebuah deskripsi'
           },
       ],
-      perusahaanTerpilih:'',
+      perusahaanTerpilih:[],
+      namaPerusahaanTerpilih:'',
   }),
   computed: {
     ...mapGetters({
@@ -111,13 +114,37 @@ export default {
       setAlert: 'alert/set',
       setAuth: 'auth/set',
     }),
+    async getCompany(){
+      await this.$axios
+        .get('/user/webadmin/company', {
+          params: {
+          },
+        //   headers: { Authorization: 'Bearer ' + this.user.token },
+        })
+        .then((response) => {
+          let { data } = response.data
+          this.listCompany = data
+          console.log('company',this.listCompany)
+        })
+        .catch((error) => {
+          let responses = error.response.data
+          console.log(responses.api_message)
+        })
+        // console.log('ihbad')
+    },
     async pilihPerusahaan(data){
         this.perusahaanTerpilih = data
+        this.namaPerusahaanTerpilih = data.company_name
         this.dialogPerusahaan = false
+    },
+    async enterCompany(){
+        console.log('perusahaan dipilih', this.perusahaanTerpilih)
+        this.$cookies.set('company', JSON.stringify(this.perusahaanTerpilih))
+        this.$router.push('/dashboard')
     }
   },
   async created() {
-    
+    await this.getCompany()
   },
 }
 </script>

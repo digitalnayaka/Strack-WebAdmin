@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-row>
+    <v-row :style="$vuetify.breakpoint.md ? 'min-height:589px' : 'min-height:949px'">
       <v-col cols="12" sm="3">
-        <div style="margin-top:10%" class="mx-2">
+        <div style="margin-top:7%" class="mx-2">
           <center>
             <img style="z-index:1" src="/img/strack_logo.png">
           </center>

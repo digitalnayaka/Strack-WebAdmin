@@ -3,7 +3,7 @@
     <v-card-title>Visum Status</v-card-title>
     <br>
     <v-card>
-      <v-row class="mx-2">
+      <!-- <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field
             solo
@@ -23,13 +23,34 @@
             <v-icon>mdi-plus </v-icon> Add Status Visum</v-btn
           >
         </v-col>
-      </v-row>
+      </v-row> -->
+      <v-toolbar flat>
+        <v-text-field
+          class="mt-7"
+          solo
+          style="width:70%"
+          label="Cari"
+          v-model="pencarian"
+          @keyup="getStatusVisum()"
+          clearable
+          prepend-inner-icon="mdi-magnify"
+        ></v-text-field>
+        <v-spacer />
+        <v-btn
+          class="white--text"
+          color="#305F72"
+          large
+          @click="dialogPostStatusVisum = true"
+        >
+          <v-icon>mdi-plus </v-icon> Add Status Visum</v-btn
+        >
+      </v-toolbar>
+      <br>
       <v-card class="mx-3">
         <v-data-table
           :headers="headers"
           :items="listStatusVisum"
           hide-default-footer
-          :search="pencarian"
           :items-per-page="150"
           class="elevation-1"
         >
@@ -53,6 +74,19 @@
                 </v-icon>
             </template>
         </v-data-table>
+        <v-row>
+          <v-col cols="10" md="10">
+            <div class="text-center pt-2">
+              <v-pagination
+                v-model="page"
+                @input="getStatusVisum()"
+                :length="lengthPage"
+                :total-visible="9"
+                color="#305F72"
+              ></v-pagination>
+            </div>
+          </v-col>
+        </v-row>
       </v-card>
       <br><br>
     </v-card>
@@ -186,6 +220,10 @@ export default {
         id:'',
         status:'',
     },
+    lengthPage: 0,
+    limit: 9,
+    offset: 0,
+    page:1,
   }),
   computed: {
     ...mapGetters({
@@ -202,15 +240,32 @@ export default {
       return args.value + "%";
     },
     async getStatusVisum(){
+      var params = new URLSearchParams();
+
+      var offset = (this.offset = (this.page - 1) * this.limit);
+      params.append("limit", this.limit);
+      params.append("offset", offset);
+      params.append("search", this.pencarian);
+
+      var request = {
+        params: params,
+        // headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/master/v1/mst_visum_status', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/master/v1/mst_visum_status', request)
         .then((response) => {
           let { data } = response.data
           this.listStatusVisum = data
+          var mod = response.data.count % this.limit;
+          var lengthPage = 0;
+
+          lengthPage = (response.data.count - mod) / this.limit;
+
+          if (mod == 0) {
+            this.lengthPage = lengthPage;
+          } else {
+            this.lengthPage = lengthPage + 1;
+          } 
           console.log(this.listStatusVisum)
         })
         .catch((error) => {

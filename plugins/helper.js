@@ -7,7 +7,7 @@ const Helper = {
   install(Vue) {
     Vue.prototype.getImage = function (image) {
       if (image != null && image.length > 0) {
-        return this.$config.baseURL + "/service/image/" + image
+        return this.$config.baseURL + "/api/user/webadmin/img/company/" + image
       }
       return "/img/unavailable.png"
     }
