@@ -214,6 +214,7 @@ export default {
         id:'',
         status:'',
     },
+    IdCompany:''
   }),
   computed: {
     ...mapGetters({
@@ -230,12 +231,15 @@ export default {
       return args.value + "%";
     },
     async getAddrData(){
+      var params = new URLSearchParams();
+      params.append("id_company", this.IdCompany.id);
+
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/master/v1/mst_address', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/master/v1/mst_address', request)
         .then((response) => {
           let { data } = response.data
           this.listStatusProspect = data
@@ -270,9 +274,12 @@ export default {
 
       formData.append('status', this.namaStatus)
       formData.append('id_user', '1')
+      formData.append("id_company", this.IdCompany.id);
 
       await this.$axios
-        .post('/master/v1/mst_address', formData)
+        .post('/master/v1/mst_address', formData, {
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -300,7 +307,9 @@ export default {
       formData.append('updated_by', '1')
 
       await this.$axios
-        .put('/master/v1/mst_address', formData)
+        .put('/master/v1/mst_address', formData, {
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -328,7 +337,7 @@ export default {
           params: {
             id: this.dataStatusProspect.id,
           },
-        //   headers: { Authorization: this.DataToken }
+          headers: { Authorization: this.DataToken }
         })
         .then((response) => {
           this.setAlert({
@@ -351,6 +360,8 @@ export default {
     }
   },
   async created() {
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
     await this.getAddrData()
     console.log('data prospect', this.dataStatusProspect)
   },

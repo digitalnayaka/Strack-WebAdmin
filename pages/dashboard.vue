@@ -73,6 +73,7 @@
             width="100%"
             style="background:#305F72;border-radius:10px;align-items:center;cursor:pointer"
             class="px-3 py-2 d-flex"
+            @click="signOut()"
           >
             <div><img width="35px" src="/img/webp/logout.webp"></div>
             <h3 class="ml-3 white--text">Logout</h3>
@@ -129,6 +130,12 @@ export default {
       setAlert: 'alert/set',
       setAuth: 'auth/set',
     }),
+    signOut() {
+      this.setAuth({})
+      this.$cookies.set('token', null)
+      this.$cookies.set('company', null)
+      location.href = '/login'
+    },
     async toLink(data){
       if (data == 'selectcompany') {
         this.$router.push('/'+data)
@@ -142,7 +149,13 @@ export default {
     },
   },
   async created() {
-    
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
+    if (this.DataToken == null && this.IdCompany == null) {
+      this.$router.push('login')
+    }else if (this.DataToken != null && this.IdCompany == null) {
+      this.$router.push('selectcompany')
+    }
   },
 }
 </script>

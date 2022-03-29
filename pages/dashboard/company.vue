@@ -306,12 +306,13 @@ export default {
       setAuth: 'auth/set',
     }),
     async getCompany(){
+      var params = new URLSearchParams();
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/user/webadmin/company', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/user/webadmin/company', request)
         .then((response) => {
           let { data } = response.data
           this.listCompany = data
@@ -324,12 +325,13 @@ export default {
         // console.log('ihbad')
     },
     async getCompanyType(){
+      var params = new URLSearchParams();
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/user/webadmin/companytype', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/user/webadmin/companytype', request)
         .then((response) => {
           let { data } = response.data
           this.companyType = data
@@ -352,7 +354,9 @@ export default {
       formData.append('phone_number', this.contactNumber)
 
       await this.$axios
-        .post('/user/webadmin/company', formData)
+        .post('/user/webadmin/company', formData,{
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -419,7 +423,9 @@ export default {
       
 
       await this.$axios
-        .put('/user/webadmin/company', formData)
+        .put('/user/webadmin/company', formData,{
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -447,7 +453,7 @@ export default {
           params: {
             id: this.dataCompany.id,
           },
-        //   headers: { Authorization: this.DataToken }
+          headers: { Authorization: this.DataToken }
         })
         .then((response) => {
           this.setAlert({
@@ -470,6 +476,8 @@ export default {
     }
   },
   async created() {
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
     await this.getCompany()
     await this.getCompanyType()
   },

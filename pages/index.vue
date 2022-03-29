@@ -1,6 +1,6 @@
 <template>
   <div>
-    ini halaman depan
+    
   </div>
 </template>
 
@@ -31,7 +31,15 @@ export default {
 
   },
   async created() {
-    
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
+    if (this.DataToken != null && this.IdCompany == null) {
+      this.$router.push('selectcompany')
+    }else if (this.DataToken != null && this.IdCompany != null) {
+      this.$router.push('dashboard')
+    }else if (this.DataToken == null && this.IdCompany == null) {
+      this.$router.push('login')
+    }
   },
 }
 </script>

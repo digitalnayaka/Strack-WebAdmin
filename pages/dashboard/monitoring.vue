@@ -222,12 +222,13 @@ export default {
       return args.value + "%";
     },
     async getService(){
+      var params = new URLSearchParams();
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/monitoring/v1/list_service', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/monitoring/v1/list_service', request)
         .then((response) => {
           let { data } = response.data
           this.listService = data
@@ -240,12 +241,13 @@ export default {
         // console.log('ihbad')
     },
     async getVm(){
+      var params = new URLSearchParams();
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/monitoring/v1/list_vm', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/monitoring/v1/list_vm', request)
         .then((response) => {
           let { data } = response.data
           this.listVm = data
@@ -259,7 +261,9 @@ export default {
     },
     async restartAllService() {
       await this.$axios
-        .post('/monitoring/v1/restart_all_service')
+        .post('/monitoring/v1/restart_all_service',{
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -284,7 +288,9 @@ export default {
       formData.append('auto_on', data.auto_on);
       
       await this.$axios
-      .post('/monitoring/v1/auto_start', formData)
+      .post('/monitoring/v1/auto_start', formData,{
+        headers: { Authorization: this.DataToken }
+      })
       .then((response) => {
           this.setAlert({
             status: true,
@@ -307,7 +313,9 @@ export default {
       formData.append('id', item.id);
 
       await this.$axios
-      .post('/monitoring/v1/restart_service', formData)
+      .post('/monitoring/v1/restart_service', formData,{
+        headers: { Authorization: this.DataToken }
+      })
       .then((response) => {
           this.setAlert({
             status: true,
@@ -332,7 +340,9 @@ export default {
           formData.append('id', this.selected[i].id);
         }
         this.$axios
-          .post('/monitoring/v1/on_service', formData)
+          .post('/monitoring/v1/on_service', formData,{
+            headers: { Authorization: this.DataToken }
+          })
           .then((response) => {
             this.setAlert({
               status: true,
@@ -357,7 +367,9 @@ export default {
           formData.append('id', this.selected[i].id);
         }
         this.$axios
-          .post('/monitoring/v1/off_service', formData)
+          .post('/monitoring/v1/off_service', formData,{
+            headers: { Authorization: this.DataToken }
+          })
           .then((response) => {
             this.setAlert({
               status: true,
@@ -384,7 +396,9 @@ export default {
         formData.append('id', this.selected[i].id);
       }
       this.$axios
-        .post('/monitoring/v1/restart_service', formData)
+        .post('/monitoring/v1/restart_service', formData,{
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -405,6 +419,8 @@ export default {
     },
   },
   async created() {
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
     await this.getService()
     await this.getVm()
   },

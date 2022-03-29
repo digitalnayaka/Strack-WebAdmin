@@ -102,6 +102,8 @@ export default {
       ],
       perusahaanTerpilih:[],
       namaPerusahaanTerpilih:'',
+      DataToken:'',
+      IdCompany:'',
   }),
   computed: {
     ...mapGetters({
@@ -115,12 +117,13 @@ export default {
       setAuth: 'auth/set',
     }),
     async getCompany(){
+      var params = new URLSearchParams();
+      var request = {
+        params: params,
+        headers: { Authorization: this.DataToken }
+      };
       await this.$axios
-        .get('/user/webadmin/company', {
-          params: {
-          },
-        //   headers: { Authorization: 'Bearer ' + this.user.token },
-        })
+        .get('/user/webadmin/company', request)
         .then((response) => {
           let { data } = response.data
           this.listCompany = data
@@ -144,6 +147,13 @@ export default {
     }
   },
   async created() {
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
+    if (this.DataToken != null && this.IdCompany != null) {
+      this.$router.push('dashboard')
+    }else if (this.DataToken == null && this.IdCompany == null) {
+      this.$router.push('login')
+    }
     await this.getCompany()
   },
 }

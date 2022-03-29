@@ -224,6 +224,7 @@ export default {
     limit: 9,
     offset: 0,
     page:1,
+    IdCompany:'',
   }),
   computed: {
     ...mapGetters({
@@ -246,10 +247,11 @@ export default {
       params.append("limit", this.limit);
       params.append("offset", offset);
       params.append("search", this.pencarian);
+      params.append("id_company", this.IdCompany.id);
 
       var request = {
         params: params,
-        // headers: { Authorization: this.DataToken }
+        headers: { Authorization: this.DataToken }
       };
 
       await this.$axios
@@ -298,9 +300,12 @@ export default {
 
       formData.append('status', this.namaStatus)
       formData.append('id_user', '1')
+      formData.append("id_company", this.IdCompany.id);
 
       await this.$axios
-        .post('/master/v1/mst_status_employee', formData)
+        .post('/master/v1/mst_status_employee', formData, {
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -328,7 +333,9 @@ export default {
       formData.append('updated_by', '1')
 
       await this.$axios
-        .put('/master/v1/mst_status_employee', formData)
+        .put('/master/v1/mst_status_employee', formData, {
+          headers: { Authorization: this.DataToken }
+        })
         .then((response) => {
           this.setAlert({
             status: true,
@@ -356,7 +363,7 @@ export default {
           params: {
             id: this.dataStatusEmployee.id,
           },
-        //   headers: { Authorization: this.DataToken }
+          headers: { Authorization: this.DataToken }
         })
         .then((response) => {
           this.setAlert({
@@ -379,6 +386,8 @@ export default {
     }
   },
   async created() {
+    this.DataToken = this.$cookies.get("token");
+    this.IdCompany = this.$cookies.get("company");
     await this.getStatusEmployee()
     console.log('data employee', this.dataStatusEmployee)
   },
