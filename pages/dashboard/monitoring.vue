@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <v-card-title>Service</v-card-title>
     <v-row>
       <v-col cols="12" sm="3" v-for="item in listVm" :key="item.id">
         <v-card >
@@ -56,7 +55,21 @@
     </v-row>
     <br><br>
 
-    <v-card>
+    <v-card class="pa-5">
+      <v-row>
+        <v-col cols="12">
+          <h2
+            style="
+              font-family: SF Pro Display;
+              font-weight: 500;
+              color: #5d5f61;
+            "
+          >
+            <strong> Service </strong>
+          </h2>
+        </v-col>
+      </v-row>
+      <br/>
       <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field

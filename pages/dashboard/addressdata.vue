@@ -1,9 +1,20 @@
 <template>
   <v-container>
-    <v-card-title>Address Data</v-card-title>
-    <br>
-    <v-card>
-        <br>
+    <v-card class="pa-5">
+      <v-row>
+        <v-col cols="12">
+          <h2
+            style="
+              font-family: SF Pro Display;
+              font-weight: 500;
+              color: #5d5f61;
+            "
+          >
+            <strong>Address Data</strong>
+          </h2>
+        </v-col>
+      </v-row>
+      <br/>
       <!-- <v-row class="mx-2">
         <v-col cols="12" sm="8">
           <v-text-field
