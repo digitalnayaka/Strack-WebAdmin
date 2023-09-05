@@ -250,7 +250,7 @@ export default {
         headers: { Authorization: this.DataToken }
       };
       await this.$axios
-        .get('/master/v1/mst_address', request)
+        .get('/master/v1/mst_address/list', request)
         .then((response) => {
           let { data } = response.data
           this.listStatusProspect = data
